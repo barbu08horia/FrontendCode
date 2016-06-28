@@ -1,0 +1,20 @@
+<select ng-model="selected" ng-options="color.text for color in colors" ng-change="changeColor()"
+        xmlns:filterBy="http://www.w3.org/1999/xhtml">
+
+</select>
+
+<select ng-model="selected" ng-options="color.text for color in colors | orderBy: 'text'">
+
+</select>
+<p> <h2 ng-class="thing">Colors</h2>
+</p>
+
+<p>Text a:
+<input type="text" ng-model="a">
+    </p>
+<p>Text b:
+<input type="text" ng-model="b">
+</p>
+
+<div ng-repeat="color in colors | filter: 'a'">{{color.text}}</div><br>
+<div ng-repeat="color in colors | orderBy:'type'">{{color.class}}</div>
