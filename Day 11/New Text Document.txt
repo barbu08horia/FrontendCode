@@ -1,0 +1,281 @@
+CREATE TABLE hr.test1(
+id number(5,2) primary key,
+descriere varchar2(100) not null,
+denumire varchar(50) unique
+);
+
+create table test2
+as
+select * from hr.employees;
+
+desc hr.test2;
+
+select * from hr.test2;
+
+alter table hr.test1 add (pret number(3,2));
+
+alter table hr.test1 drop (pret);
+
+alter table hr.test1 modify (descriere varchar(75));
+
+drop table test1;
+
+describe test1;
+
+delete from hr.test2;
+
+rollback;
+
+select * from hr.test2;
+
+truncate table hr.test2;
+
+rollback;
+
+select uc.contraint_name, uc.constraint_type, uc.table_name from user_contraints, uc. * from user_constraint uc;
+
+insert into hr.test1(id, descriere, denumire) values(2,'ceva2','ceva3');
+
+alter table hr.test1 add constraint ck_nn_den check (substr(denumire,1,3)in('AN') )novalidate;
+
+select * from departments;
+
+select department_id "departament firma", manager_id from departments;
+describe hr.employees
+
+select last_name ||' '||first_name nume from HR.employees;
+
+select upper(last_name)||' '||(first_name) nume from HR.employees where lower(first_name)='ellen';
+
+select salary, first_name from employees where salary between 2000 and 9000 
+
+select salary, first_name from employees where salary in (2000,9000);
+
+select * from employees where lower(first_name) like 's%';
+
+select * from employees where lower(first_name) like 's_even';
+
+select * from employees where hire_date = to_date('01/01/2001','dd/mm/yyyy');
+
+select * from employees where hire_date > to_date('01/01/2001','dd/mm/yyyy');
+
+
+
+select sysdate from dual;
+
+select nvl(commission_pct,8) from employees;
+
+select coalesce(commission_pct,null,234,null) from employees;
+
+select nvl2(commission_pct,5,234) from employees;
+
+select FIRST_NAME, Salary*12+commission_PCT REM drom employees;
+
+select rpad(substr(first_name, 1, 3), 7, '?') from employees;
+
+select first_name,trim('S' from first_name) from employees;
+
+select commission_pct,ceil(commission_pct) from employees where COMMISSION_PCT is not null;
+
+select sysdate+ 10 from dual;
+
+select months_between (to date('01-09-1995','dd-mm-yyyy'), to date('01-01-1992','dd-mm-yyyy'));
+
+select next_day(sysdate, 'Friday') from dual;
+
+select next_DAY(SYSDATE +20, 'friday') from dual;
+
+select round (sysdate, 'year') from dual;
+
+select next_day(last_day(sysdate)-7, 'friday') from dual;
+
+select distinct department_id from employees where department_id is not null;
+
+select first_name||', '||job_id as "angajatul si titulatura" from employees;
+
+select last_name,salary from employees where salary between 2000 and 14000 order by salary desc;
+
+select last_name,salary, commission_pct from employees where commission_pct is not null order by commission_pct;
+
+select last_name, job_id, salary from employees where lower(job_id) in ('st_clerk', 'sa_rep') and salary not in (2500,3500,7000) order by last_name desc;
+
+select last_name, salary, salary*0.15 newsal from employees;
+
+select upper(last_name||' '||first_name), length(last_name||' '||first_name), nvl(salary,0)*nvl(commission_pct,1) from employees where substr(upper(first_name),1,1) in (J,A,M)???;
+
+select first_name, months_between (to_date('25/12/2002','dd/mm/yyyy'), hire_date) vechime from employees where hire_date < to_date('25.12.2002', 'dd-mm-yyyy') order by vechime desc;
+
+select case job_id
+        when 'AD_PRES' then 'A'
+        when 'ST_MAN' then 'B'
+        when 'IT_PROG' then 'C'
+        when 'SA_REP' then 'D'
+        when 'ST_CLERK' then 'E'
+        else '0'
+        end GRADE
+        from employees;
+        
+Select job_id, DECODE(JOB_ID,'AD_PRES','A','ST_MAN','B','IT_PROG','C', 'SA_REP','D','ST_CLERK','E') ;     
+
+select * from employees;
+
+select*from employees where commission_pct = null;
+
+select decode(commission_pct,null,1, commission_pct) from employees;
+
+select case commission_pct when null then 1
+            else commission_pct
+            end
+from employees;    
+
+select a.first_name||' '||a.last_name, b.department_name, trunc(add_months(hire_date,1),'Month') from employees a, departments b, locations c
+where a.department_id = b.department_id and
+      
+      b.manager_id is not null and
+      c.location_id=b.location_id and
+      lower(c.city) = 'seattle';
+
+      
+select a.first_name, b.department_name from employees a, departments b where a.department_id=b.department_id(+);
+
+select count(1) from employees;
+
+select emp.first_name,
+nvl( (select first_name
+      from employees emp1
+      where emp.manager_ID = EMP1.EMPLOYEE_ID), 'n/a') Manager, manager_id
+      from employees emp;
+      
+      select * from employees where employee_id = 100;
+      
+      select * from employees cross join departments;
+      
+select count (*),department_id from employees group by department_id;
+
+select round(avg(salary),2), min(salary), max(salary), sum(salary) from employees where lower(job_id) in ('sa_rep','mk_rep','pr_rep','hr_rep') group by department_id having avg(salary)>7000;
+
+/*/ Partea a doua /*/
+
+select first_name, salary, department_id
+from employees
+where(salary, department_id)
+in
+(select min(salary),  department_id from employees
+group by department_id);
+
+select first_name, salary, job_id, department_id
+        from employees
+        where salary> some (select distinct salary from employees where department_id=30)
+        order by salary desc;
+
+select min(salary) from employees where department_id=30;
+
+select first_name, salary, job_id, department_id
+        from employees
+        where salary> all (select distinct max(salary) from employees where department_id=30)
+        order by salary;
+        
+select first_name, last_name, loc.city from employees emp, (select employee_id, city
+from employees emp, departments dep, location loc where emp.department_id=dep.department_id and
+dep.location_id =  loc.location_id) loc
+where loc.employee_id=emp.employee_id;
+?? 
+;
+
+create table hr.test3 as SELECT * FROM employees where 1=2;
+
+select * from hr.test3;
+
+insert into test3  select * from employees where department_id=30;
+
+select * from test3;
+commit;
+
+select * from test3;
+
+update test3 set department_id='50' where job_id = 'PU_MAN';
+
+commit;
+
+select * from test3;
+
+delete from test3 where department_id='50';
+
+
+merge into test3 t3 using 
+(select employee_id from employees where lower(first_name)='den') man
+on ( t3.manager_id=man.employee_id)
+when matched then
+update set job_id = 'sel_rep';
+
+select* from test3;
+
+update test3 set job_id='sel_rep' where manager_id in (select employee_id from employees where lower(first_name)='den');
+
+select* from test3;
+
+insert into test3(employee_id, first_name, last_name,email, hire_date, job_id) values(100, 'Marinica','Popescu','as',sysdate, 'sal_rep');
+
+update test3 set first_name='MarUpd' where employee_id=100;
+
+savepoint A;
+
+select * form test3 where employee_id=100;
+update test3 set first_name='MarUpd2' where employee_id=100;
+
+delete from test3 where employee_id=100;
+
+select * from test3;
+
+rollback to savepoint A;
+
+create or replace view TABELA as 
+select employee_id, first_name ||' '|| last_name Nume,  
+(select first_name ||' '|| last_name Nume from employees mgr 
+where mgr.employee_id=emp.manager_id) Manager, dep.department_id 
+from employees emp, departments dep where dep.department_id = emp.department_id and emp.manager_id is not null;
+
+SELECT * FROM tabela;
+
+create or replace view TABELA as 
+select employee_id, first_name ||' '|| last_name Nume,  
+(select first_name ||' '|| last_name Nume from employees mgr 
+where mgr.employee_id=emp.manager_id) Manager, dep.department_id 
+from employees emp, departments dep where dep.department_id = emp.department_id and emp.manager_id is not null and not exists(select 1 from employees emp1 where emp1.manager.id = emp.employee_id);
+
+SELECT * FROM tabela;
+
+select * from employees where employee_id=112;
+select * from employees where manager_id=112;
+
+select * from tabela where employee_id=108;
+
+create sequence emp_seq1
+start with 1
+increment by 4
+maxvalue 50
+
+cycle
+cache 10;
+
+select emp_seq1.nextval, emp_seq1.currval from dual;
+
+create sequence emp_seq2
+start with 1
+increment by 4
+maxvalue 50
+
+cycle
+cache 10;
+
+select emp_seq2.nextval, emp_seq2.currval from dual;
+
+create sequence emp_seq3
+start with 1
+increment by 4
+maxvalue 50
+
+cycle
+cache 10;
+
+select emp_seq3.nextval, emp_seq3.currval from dual;
